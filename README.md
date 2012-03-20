@@ -38,9 +38,11 @@ See the [MongoDB collection API][3]
 
     $ make bench
 
-    collection benchmark took  263
-    mongoose benchmark took  387
-    naive native benchmark took  527
+    collection benchmark took  351
+    global native benchmark took  357
+    mongoose benchmark took  460
+    naive native benchmark took  670
+
 
 
 ## Installation

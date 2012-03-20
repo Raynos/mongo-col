@@ -16,19 +16,50 @@ var db = new Db('integration_tests',
     UserSchema = new Schema({
         hello: String
     }),
-    User = mongoose.model('User', UserSchema)
+    User = mongoose.model('UserZ', UserSchema)
 
-runNTimes(N, naiveMongooseBench, function (time) {
-    console.log("mongoose benchmark took ", time)
+var db_open_start = Date.now()
+new Db('integration_tests', 
+    new Server("127.0.0.1", 27017, {
+       auto_reconnect: false, 
+       poolSize: 4
+    }), {native_parser: false}
+).open(function (err, global_db) {
+    var db_open_time = Date.now() - db_open_start
+    runNTimes(N, globalDatabaseBench.bind(null, global_db), function (time) {
+        console.log("global native benchmark took ", time + db_open_time)
+        global_db.close()
+    })
+
+    runNTimes(N, naiveMongooseBench, function (time) {
+        console.log("mongoose benchmark took ", time)
+    })
+
+    runNTimes(N, naiveNativeBench, function (time) {
+        console.log("naive native benchmark took ", time)
+    })
+
+    runNTimes(N, collectionBench, function (time) {
+        console.log("collection benchmark took ", time)
+        Col.collection.db.close()
+    })    
 })
 
-runNTimes(N, naiveNativeBench, function (time) {
-    console.log("naive native benchmark took ", time)
-})
+function globalDatabaseBench(db, callback) {
+    var native_start = Date.now()
+    db.collection("CollectionN", function(err, col) {
+        col.drop(function () {
+            col.insert({hello:'world_no_safe'}, function () {
+                col.findOne({hello:'world_no_safe'}, function(err, item) {
+                    var time_taken = Date.now()
+                    callback('world_no_safe' === (item && item.hello),
+                        time_taken - native_start)
+                })
+            })
+        })
+    })    
+}
 
-runNTimes(N, collectionBench, function (time) {
-    console.log("collection benchmark took ", time)
-})
 
 function naiveMongooseBench(callback) {
     var mongoose_start = Date.now()

@@ -10,11 +10,13 @@ describe("mongo-collection", function () {
     })
 
     it("should allow inserting", function (done) {
-        Users.insert({ name: "foo" })
-        Users.findOne({ name: "foo" }, function (err, data) {
-            assert(data.name === "foo",
-                "data name incorrect")
-            done()
+        Users.insert({ name: "foo" }, function () {
+            assert(Users.collection.db, "database exists")
+            Users.findOne({ name: "foo" }, function (err, data) {
+                assert(data.name === "foo",
+                    "data name incorrect")
+                done()
+            })    
         })
     })
 })
