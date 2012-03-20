@@ -40,10 +40,11 @@ You can optionally pass in a databaseName as a string or an instance of a mongod
 
     $ make bench
     
-    collection benchmark took  351
-    global native benchmark took  357
-    mongoose benchmark took  460
-    naive native benchmark took  670
+    global native benchmark took  9942 56
+    mongoose benchmark took  22812 123
+    collection benchmark took  12004 62
+    mongoskin benchmark took  9894 56
+
 
 
 
