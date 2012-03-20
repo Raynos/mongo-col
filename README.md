@@ -20,7 +20,7 @@ Setting up a mongodb database connection requires too much callback soup, remove
 
 ## Documentation
 
-### <a name="colleciton" href="#collection">collection(collectionName)</a>
+### <a name="colleciton" href="#collection">collection(collectionName[, databaseName])</a>
 
 `collection` takes a collection name and returns a collection object. This collection object has all the mongodb collection methods and sets up a database connection internally
 
