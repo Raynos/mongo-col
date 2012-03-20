@@ -34,6 +34,8 @@ See the [MongoDB collection API][3]
         password: "bar"
     })
 
+You can optionally pass in a databaseName as a string or an instance of a mongodb database object
+
 ## <a name="benchmarks" href="#benchmarks">Benchmarks</a>
 
     $ make bench
