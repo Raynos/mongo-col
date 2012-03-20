@@ -1,6 +1,6 @@
 var Db = require('mongodb').Db,
     Server = require('mongodb').Server,
-    CollectionName = require("../")("CollectionName"),
+    Col = require("../")("Collection"),
     assert = require('assert')
 
 var db = new Db('integration_tests', 
@@ -9,39 +9,62 @@ var db = new Db('integration_tests',
        poolSize: 4
     }), {native_parser: false})
 
-// Establish connection to db
-var native_start = Date.now()
-db.open(function(err, db) {
 
-    // Fetch a collection to insert document into
-    db.collection("CollectionName", function(err, collection) {
-        collection.drop()
+runTwentyTimes(naiveNativeBench, function (time) {
+    console.log("naive native benchmark took ", time)
+})
 
-        // Insert a single document
-        collection.insert({hello:'world_no_safe'})
+runTwentyTimes(collectionBench, function (time) {
+    console.log("collection benchmark took ", time)
+})
 
-        // Wait for a second before finishing up, to ensure we have written the item to disk
-        setTimeout(function() {
-
-            // Fetch the document
-            collection.findOne({hello:'world_no_safe'}, function(err, item) {
-                assert.equal(null, err)
-                assert.equal('world_no_safe', item.hello)
-                var time_taken = Date.now()
-                console.log("native time taken", )
-                db.close();
+function naiveNativeBench(callback) {
+    var native_start = Date.now()
+    db.open(function (err, db) {
+        db.collection("CollectionName", function(err, col) {
+            col.drop(function () {
+                col.insert({hello:'world_no_safe'}, function () {
+                    col.findOne({hello:'world_no_safe'}, function(err, item) {
+                        var time_taken = Date.now()
+                        db.close()
+                        callback('world_no_safe' === (item && item.hello),
+                            time_taken - native_start)
+                    })
+                })
             })
-        }, 1000)
+        })    
     })
-})
+    
+}
 
-CollectionName.insert({ hello: 'world_no_safe' })
-
-setTimeout(function () {
-    // Fetch the document
-    CollectionName.findOne({hello:'world_no_safe'}, function(err, item) {
-        assert.equal(null, err);
-        assert.equal('world_no_safe', item.hello);
-        // db.close(); can't close db
+function collectionBench(callback) {
+    var collection_start = Date.now()
+    Col.drop(function () {
+        Col.insert({ hello: 'world_no_safe' }, function () {
+            Col.findOne({hello:'world_no_safe'}, function(err, item) {
+                var time_taken = Date.now()
+                callback('world_no_safe' === (item && item.hello),
+                        time_taken - collection_start)
+            })
+        })    
     })
-})
+}
+
+function runTwentyTimes(program, cb) {
+    var counter = 20,
+        time = 0
+
+    ;(function loop() {
+        if (counter === 0) {
+            return cb(time)
+        }
+        program(function (success, timeTaken) {
+            //console.log(success, timeTaken)
+            time += timeTaken
+            if (success) {
+                counter--    
+            }
+            loop()
+        })
+    })()
+}

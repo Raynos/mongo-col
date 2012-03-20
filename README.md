@@ -27,7 +27,7 @@ Setting up a mongodb database connection requires too much callback soup, remove
 See the [MongoDB collection API][3]
 
     var collection = require("mongo-col"),
-        Users = collection("Users")
+        Users = collection("Users", "optionalDatabaseName")
 
     Users.insert({
         name: "foo",

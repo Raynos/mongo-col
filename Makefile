@@ -5,4 +5,7 @@ test:
 		--ui bdd \
 		--reporter $(REPORTER)
 
+bench:
+	node benchmarks/benchmarks.js
+
 .PHONY: test
