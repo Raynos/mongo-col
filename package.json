@@ -17,7 +17,8 @@
         "test": "make test"
     },
     "devDependencies": {
-        "mocha": "0.14.1"
+        "mocha": "0.14.1",
+        "mongoose": "2.5.10"
     },
     "keywords": ["mongo", "db", "database", "collection", "orm"],
     "repository": "git://github.com/Raynos/mongo-col.git",
