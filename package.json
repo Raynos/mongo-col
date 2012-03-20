@@ -1,0 +1,28 @@
+{
+    "name": "mongo-col",
+    "description": "mongoDB collection wrapper",
+    "version": "0.1.0",
+    "author": "Raynos <raynos2@gmail.com>",
+    "contributors": [
+        {
+            "name": "Raynos",
+            "email": "raynos2@gmail.com",
+            "url": "http://raynos.org"
+        }
+    ],
+    "dependencies": {
+        "mongodb": "0.9.9-7"
+    },
+    "scripts": {
+        "test": "make test"
+    },
+    "devDependencies": {
+        "mocha": "0.14.1"
+    },
+    "keywords": ["mongo", "db", "database", "collection", "orm"],
+    "repository": "git://github.com/Raynos/mongo-col.git",
+    "main": "index.js",
+    "engines": {
+        "node": "0.6"
+    }
+}
