@@ -33,6 +33,7 @@ new Db('integration_tests',
 
     runNTimes(N, naiveMongooseBench, function (time) {
         console.log("mongoose benchmark took ", time)
+        mongoose.disconnect()
     })
 
     runNTimes(N, naiveNativeBench, function (time) {

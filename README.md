@@ -37,11 +37,12 @@ See the [MongoDB collection API][3]
 ## <a name="benchmarks" href="#benchmarks">Benchmarks</a>
 
     $ make bench
-
+    
     collection benchmark took  351
     global native benchmark took  357
     mongoose benchmark took  460
     naive native benchmark took  670
+
 
 
 
