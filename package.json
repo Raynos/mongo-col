@@ -18,7 +18,8 @@
     },
     "devDependencies": {
         "mocha": "0.14.1",
-        "mongoose": "2.5.10"
+        "mongoose": "2.5.10",
+        "mongoskin": "0.3.3"
     },
     "keywords": ["mongo", "db", "database", "collection", "orm"],
     "repository": "git://github.com/Raynos/mongo-col.git",

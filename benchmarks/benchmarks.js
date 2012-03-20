@@ -4,19 +4,11 @@ var Db = require('mongodb').Db,
     Col = require("../")("Collection"),
     assert = require('assert'),
     mongoose = require('mongoose'),
-    Schema = mongoose.Schema
-
-mongoose.connect('mongodb://localhost/my_database')
-
-var db = new Db('integration_tests', 
-    new Server("127.0.0.1", 27017, {
-       auto_reconnect: false, 
-       poolSize: 4
-    }), {native_parser: false}),
-    UserSchema = new Schema({
-        hello: String
-    }),
-    User = mongoose.model('UserZ', UserSchema)
+    mongoskin = require("mongoskin"),
+    Schema = mongoose.Schema,
+    User, 
+    skinUser,
+    db
 
 var db_open_start = Date.now()
 new Db('integration_tests', 
@@ -25,6 +17,22 @@ new Db('integration_tests',
        poolSize: 4
     }), {native_parser: false}
 ).open(function (err, global_db) {
+    mongoose.connect('mongodb://localhost/my_database')
+
+    var UserSchema = new Schema({
+            hello: String
+        }),
+        skinDB = mongoskin.db('localhost:27017/testdb')
+
+    db = new Db('integration_tests', 
+        new Server("127.0.0.1", 27017, {
+           auto_reconnect: false, 
+           poolSize: 4
+        }), {native_parser: false})
+
+    User = mongoose.model('UserZ', UserSchema)
+    skinUser = skinDB.collection('skinUser')
+
     var db_open_time = Date.now() - db_open_start
     runNTimes(N, globalDatabaseBench.bind(null, global_db), function (time) {
         console.log("global native benchmark took ", time + db_open_time)
@@ -43,7 +51,12 @@ new Db('integration_tests',
     runNTimes(N, collectionBench, function (time) {
         console.log("collection benchmark took ", time)
         Col.collection.db.close()
-    })    
+    })
+
+    runNTimes(N, mongoSkinBench, function (time) {
+        console.log("mongoskin benchmark took ", time)
+        skinDB.close()
+    })
 })
 
 function globalDatabaseBench(db, callback) {
@@ -101,6 +114,19 @@ function collectionBench(callback) {
                 var time_taken = Date.now()
                 callback('world_no_safe' === (item && item.hello),
                         time_taken - collection_start)
+            })
+        })    
+    })
+}
+
+function mongoSkinBench(callback) {
+    var mongoskin_start = Date.now()
+    skinUser.drop(function () {
+        skinUser.insert({ hello: 'world_no_safe' }, function () {
+            skinUser.findOne({hello:'world_no_safe'}, function(err, item) {
+                var time_taken = Date.now()
+                callback('world_no_safe' === (item && item.hello),
+                        time_taken - mongoskin_start)
             })
         })    
     })
