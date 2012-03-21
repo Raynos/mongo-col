@@ -58,7 +58,6 @@ function globalDatabaseBench(db, callback) {
                     var time_taken = Date.now()
                     callback('world_no_safe' === (item && item.hello),
                         time_taken - native_start)
-                    //console.log("native", time_taken - native_start)
                 })
             })
         })
@@ -75,7 +74,6 @@ function naiveMongooseBench(callback) {
                 var time_taken = Date.now()
                 callback(token === (doc && doc.hello), 
                     time_taken - mongoose_start)
-                //console.log("mongoose", time_taken - mongoose_start)
             })
         })
     })
@@ -90,7 +88,6 @@ function collectionBench(callback) {
                 var time_taken = Date.now()
                 callback(token === (item && item.hello),
                         time_taken - collection_start)
-                //console.log("collection", time_taken - collection_start)
             })
         })    
     })
@@ -105,7 +102,6 @@ function mongoSkinBench(callback) {
                 var time_taken = Date.now()
                 callback(token === (item && item.hello),
                     time_taken - mongoskin_start)
-                //console.log("mongoskin", time_taken - mongoskin_start)
             })
         })    
     })
