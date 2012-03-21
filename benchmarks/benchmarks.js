@@ -58,6 +58,7 @@ function globalDatabaseBench(db, callback) {
                     var time_taken = Date.now()
                     callback('world_no_safe' === (item && item.hello),
                         time_taken - native_start)
+                    //console.log("native", time_taken - native_start)
                 })
             })
         })

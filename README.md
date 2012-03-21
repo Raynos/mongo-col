@@ -39,14 +39,11 @@ You can optionally pass in a databaseName as a string or an instance of a mongod
 ## <a name="benchmarks" href="#benchmarks">Benchmarks</a>
 
     $ make bench
-    
-    global native benchmark took  9942 56
-    mongoose benchmark took  22812 123
-    collection benchmark took  12004 62
-    mongoskin benchmark took  9894 56
 
-
-
+    global native benchmark took  9332 53
+    mongoose benchmark took  22710 121
+    collection benchmark took  9851 56
+    mongoskin benchmark took  10817 59
 
 
 ## Installation
