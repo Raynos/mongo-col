@@ -1,8 +1,7 @@
 {
     "name": "mongo-col",
     "description": "mongoDB collection wrapper",
-    "version": "0.1.8",
-    "author": "Raynos <raynos2@gmail.com>",
+    "version": "0.1.999999999author": "Raynos <raynos2@gmail.com>",
     "contributors": [
         {
             "name": "Raynos",
