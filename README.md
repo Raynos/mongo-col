@@ -34,7 +34,13 @@ See the [MongoDB collection API][3]
         password: "bar"
     })
 
-You can optionally pass in a databaseName as a string or an instance of a mongodb database object
+You can optionally pass in a databaseName as a string or an instance of a mongodb database object.
+
+There is also an optional async API
+
+    require("mongo-col")("Users", function (collection) {
+        ...  
+    })
 
 ## <a name="benchmarks" href="#benchmarks">Benchmarks</a>
 
