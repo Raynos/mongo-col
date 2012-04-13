@@ -6,12 +6,40 @@ mongoDB collection wrapper
 
 ## Example
 
-    var collection = require("mongo-col"),
-        Users = collection("Users")
+### With mongo-db native
 
-    Users.insert({
-        name: "foo",
-        password: "bar"
+    var Db = require('mongodb').Db,
+        Server = require('mongodb').Server
+    
+    var db = new Db('integration_tests', 
+        new Server("127.0.0.1", 27017, {
+           auto_reconnect: false, 
+           poolSize: 4
+        }))
+    
+    db.open(function(err, db) {
+        db.collection("CollectionName", function(err, collection) {
+            collection.insert({hello:'world_no_safe'}, function () {
+                collection.findOne({hello:'world_no_safe'}, function(err, item) {
+                    assert.equal(null, err)
+                    assert.equal('world_no_safe', item.hello)
+                    db.close()
+                })
+            })
+        })
+    })
+    
+### With mongo-col
+
+    var collection = require("mongo-col"),
+        CollectionName = collection("CollectionName", "integration_tests")
+    
+    CollectionName.insert({ hello: "world_no_safe"}, function () {
+        CollectionName.findOne({ hello: "world_no_safe"}, function (err, item) {
+            assert.equal(null, err)
+            assert.equal('world_no_safe', item.hello)
+            CollectionName.collection.db.close()
+        })
     })
 
 ## Motivation
