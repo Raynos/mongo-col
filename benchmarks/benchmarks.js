@@ -42,7 +42,9 @@ new Db('integration_tests',
 
                 runNTimes(N, mongoSkinBench, function (time, time2) {
                     console.log("mongoskin benchmark took ", time, time2)
-                    skinDB.close()
+                    skinUser.drop(function () {
+                        skinDB.close()    
+                    })
                 })
             })
         })
@@ -52,14 +54,12 @@ new Db('integration_tests',
 function globalDatabaseBench(db, callback) {
     var native_start = Date.now()
     db.collection("CollectionN", function(err, col) {
-        col.drop(function () {
-            col.insert({hello:'world_no_safe'}, function () {
-                col.findOne({hello:'world_no_safe'}, function(err, item) {
-                    var time_taken = Date.now()
-                    callback('world_no_safe' === (item && item.hello),
-                        time_taken - native_start)
-                    //console.log("native", time_taken - native_start)
-                })
+        col.insert({hello:'world_no_safe'}, function () {
+            col.findOne({hello:'world_no_safe'}, function(err, item) {
+                var time_taken = Date.now()
+                callback('world_no_safe' === (item && item.hello),
+                    time_taken - native_start)
+                //console.log("native", time_taken - native_start)
             })
         })
     })    
@@ -68,47 +68,41 @@ function globalDatabaseBench(db, callback) {
 
 function naiveMongooseBench(callback) {
     var mongoose_start = Date.now()
-    User.collection.drop(function () {
-        var token = uuid()
-        User.create({ hello: token}, function () {
-            User.findOne({ hello: token}, function (err, doc) {
-                var time_taken = Date.now()
-                callback(token === (doc && doc.hello), 
-                    time_taken - mongoose_start)
-                //console.log("mongoose", time_taken - mongoose_start)
-            })
+    var token = uuid()
+    User.create({ hello: token}, function () {
+        User.findOne({ hello: token}, function (err, doc) {
+            var time_taken = Date.now()
+            callback(token === (doc && doc.hello), 
+                time_taken - mongoose_start)
+            //console.log("mongoose", time_taken - mongoose_start)
         })
     })
 }
 
 function collectionBench(callback) {
     var collection_start = Date.now()
-    Col.drop(function () {
-        var token = uuid()
-        Col.insert({ hello: token }, function () {
-            Col.findOne({hello:token}, function(err, item) {
-                var time_taken = Date.now()
-                callback(token === (item && item.hello),
-                        time_taken - collection_start)
-                //console.log("collection", time_taken - collection_start)
-            })
-        })    
+    var token = uuid()
+    Col.insert({ hello: token }, function () {
+        Col.findOne({hello:token}, function(err, item) {
+            var time_taken = Date.now()
+            callback(token === (item && item.hello),
+                    time_taken - collection_start)
+            //console.log("collection", time_taken - collection_start)
+        })
     })
 }
 
 function mongoSkinBench(callback) {
     var mongoskin_start = Date.now()
-    skinUser.drop(function () {
-        var token = uuid()
-        skinUser.insert({ hello: token }, function () {
-            skinUser.findOne({hello:token}, function(err, item) {
-                var time_taken = Date.now()
-                callback(token === (item && item.hello),
-                    time_taken - mongoskin_start)
-                //console.log("mongoskin", time_taken - mongoskin_start)
-            })
-        })    
-    })
+    var token = uuid()
+    skinUser.insert({ hello: token }, function () {
+        skinUser.findOne({hello:token}, function(err, item) {
+            var time_taken = Date.now()
+            callback(token === (item && item.hello),
+                time_taken - mongoskin_start)
+            //console.log("mongoskin", time_taken - mongoskin_start)
+        })
+    })    
 }
 
 function runNTimes(counter, program, cb) {
