@@ -1,7 +1,7 @@
 {
     "name": "mongo-col",
     "description": "mongoDB collection wrapper",
-    "version": "0.1.10",
+    "version": "0.1.11",
     "author": "Raynos <raynos2@gmail.com>",
     "contributors": [
         {
@@ -11,7 +11,8 @@
         }
     ],
     "dependencies": {
-        "mongodb": "0.9.9-7"
+        "mongodb": "0.9.9-7",
+        "pd": "0.6.3"
     },
     "scripts": {
         "test": "make test"
