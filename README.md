@@ -8,39 +8,43 @@ mongoDB collection wrapper
 
 ### With mongo-db native
 
-    var Db = require('mongodb').Db,
-        Server = require('mongodb').Server
-    
-    var db = new Db('integration_tests', 
-        new Server("127.0.0.1", 27017, {
-           auto_reconnect: false, 
-           poolSize: 4
-        }))
-    
-    db.open(function(err, db) {
-        db.collection("CollectionName", function(err, collection) {
-            collection.insert({hello:'world_no_safe'}, function () {
-                collection.findOne({hello:'world_no_safe'}, function(err, item) {
-                    assert.equal(null, err)
-                    assert.equal('world_no_safe', item.hello)
-                    db.close()
-                })
+``` js
+var Db = require('mongodb').Db,
+    Server = require('mongodb').Server
+
+var db = new Db('integration_tests',
+    new Server("127.0.0.1", 27017, {
+       auto_reconnect: false,
+       poolSize: 4
+    }))
+
+db.open(function(err, db) {
+    db.collection("CollectionName", function(err, collection) {
+        collection.insert({hello:'world_no_safe'}, function () {
+            collection.findOne({hello:'world_no_safe'}, function(err, item) {
+                assert.equal(null, err)
+                assert.equal('world_no_safe', item.hello)
+                db.close()
             })
         })
     })
-    
+})
+```
+
 ### With mongo-col
 
-    var collection = require("mongo-col"),
-        CollectionName = collection("CollectionName", "integration_tests")
-    
-    CollectionName.insert({ hello: "world_no_safe"}, function () {
-        CollectionName.findOne({ hello: "world_no_safe"}, function (err, item) {
-            assert.equal(null, err)
-            assert.equal('world_no_safe', item.hello)
-            CollectionName.collection.db.close()
-        })
+``` js
+var collection = require("mongo-col"),
+    CollectionName = collection("CollectionName", "integration_tests")
+
+CollectionName.insert({ hello: "world_no_safe"}, function () {
+    CollectionName.findOne({ hello: "world_no_safe"}, function (err, item) {
+        assert.equal(null, err)
+        assert.equal('world_no_safe', item.hello)
+        CollectionName.close()
     })
+})
+```
 
 ## Motivation
 
@@ -64,21 +68,16 @@ See the [MongoDB collection API][3]
 
 You can optionally pass in a databaseName as a string or an instance of a mongodb database object.
 
-There is also an optional async API
-
-    require("mongo-col")("Users", function (collection) {
-        ...  
-    })
-
 ## <a name="benchmarks" href="#benchmarks">Benchmarks</a>
 
-    $ make bench
+```
+$ npm run-script benchmark
 
-    global native benchmark took  9332 53
-    mongoose benchmark took  22710 121
-    collection benchmark took  9851 56
-    mongoskin benchmark took  10817 59
-
+mongoskin benchmark took  11501 66
+global native benchmark took  7790 49
+mongoose benchmark took  28422 218
+collection benchmark took  7947 53
+```
 
 ## Installation
 
@@ -86,7 +85,7 @@ There is also an optional async API
 
 ## Tests
 
-`make test`
+`npm test`
 
 ## Contributors
 
