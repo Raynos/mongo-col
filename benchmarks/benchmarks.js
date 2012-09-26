@@ -1,19 +1,24 @@
 var Db = require('mongodb').Db,
     Server = require('mongodb').Server,
     N = 200,
-    Col = require("../")("Collection"),
+    Col = require("../index")("mongo-col-benchmark", "mongo-col-benchmark", {
+        serverOptions: {
+            auto_reconnect: true
+            , poolSize: 4
+        }
+    }),
     assert = require('assert'),
     mongoose = require('mongoose'),
     mongoskin = require("mongoskin"),
     Schema = mongoose.Schema,
     uuid = require("node-uuid"),
-    User, 
+    User,
     skinUser
 
 var db_open_start = Date.now()
-new Db('integration_tests', 
+new Db('integration_tests',
     new Server("127.0.0.1", 27017, {
-       auto_reconnect: true, 
+       auto_reconnect: true,
        poolSize: 4
     })
 ).open(function (err, global_db) {
@@ -27,25 +32,30 @@ new Db('integration_tests',
     User = mongoose.model('UserZ', UserSchema)
     skinUser = skinDB.collection('skinUser')
 
-    var db_open_time = Date.now() - db_open_start
-    runNTimes(N, globalDatabaseBench.bind(null, global_db), function (time, time2) {
-        console.log("global native benchmark took ", time + db_open_time, time2)
-        global_db.close()
+    runNTimes(N, mongoSkinBench, function (time, time2) {
+        console.log("mongoskin benchmark took ", time, time2)
+        skinUser.drop(function () {
+            skinDB.close()
 
-        runNTimes(N, naiveMongooseBench, function (time, time2) {
-            console.log("mongoose benchmark took ", time, time2)
-            mongoose.disconnect()
+            var db_open_time = Date.now() - db_open_start
+            runNTimes(N, globalDatabaseBench.bind(null, global_db)
+                , function (time, time2) {
+                    console.log("global native benchmark took "
+                        , time + db_open_time, time2)
+                    global_db.close()
 
-            runNTimes(N, collectionBench, function (time, time2) {
-                console.log("collection benchmark took ", time, time2)
-                Col.collection.db.close()
+                    runNTimes(N, naiveMongooseBench, function (time, time2) {
+                        console.log("mongoose benchmark took ", time, time2)
+                        mongoose.disconnect()
 
-                runNTimes(N, mongoSkinBench, function (time, time2) {
-                    console.log("mongoskin benchmark took ", time, time2)
-                    skinUser.drop(function () {
-                        skinDB.close()    
+                        runNTimes(N, collectionBench, function (time, time2) {
+                            console.log("collection benchmark took "
+                                , time, time2)
+                            Col.drop(function () {
+                                Col.close()
+                            })
+                        })
                     })
-                })
             })
         })
     })
@@ -62,7 +72,7 @@ function globalDatabaseBench(db, callback) {
                 //console.log("native", time_taken - native_start)
             })
         })
-    })    
+    })
 }
 
 
@@ -72,7 +82,7 @@ function naiveMongooseBench(callback) {
     User.create({ hello: token}, function () {
         User.findOne({ hello: token}, function (err, doc) {
             var time_taken = Date.now()
-            callback(token === (doc && doc.hello), 
+            callback(token === (doc && doc.hello),
                 time_taken - mongoose_start)
             //console.log("mongoose", time_taken - mongoose_start)
         })
@@ -102,7 +112,7 @@ function mongoSkinBench(callback) {
                 time_taken - mongoskin_start)
             //console.log("mongoskin", time_taken - mongoskin_start)
         })
-    })    
+    })
 }
 
 function runNTimes(counter, program, cb) {
@@ -110,15 +120,17 @@ function runNTimes(counter, program, cb) {
         total = counter,
         start_time = Date.now()
     for (var i = 0; i < total; i++) {
-        program(function (success, cumulativeTime) {
-            time += cumulativeTime
-            if (success) {
-                counter--
-                if (counter === 0) {
-                    var absoluteTime = Date.now() - start_time
-                    return cb(time, absoluteTime)
-                }
+        program(run)
+    }
+
+    function run(success, cumulativeTime) {
+        time += cumulativeTime
+        if (success) {
+            counter--
+            if (counter === 0) {
+                var absoluteTime = Date.now() - start_time
+                return cb(time, absoluteTime)
             }
-        })
+        }
     }
 }
