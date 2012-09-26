@@ -11,7 +11,7 @@
     }
   ],
   "dependencies": {
-    "mongodb": "1.1.4",
+    "mongodb": "~1.1.7",
     "xtend": "~1.0.3",
     "cached-events": "0.0.1",
     "replaying": "~0.1.3"
