@@ -32,7 +32,9 @@ function collection(collectionName, database, options) {
 
             function callOnCollection(err, collection) {
                 if (err) {
-                    cb && cb(err)
+                    if (typeof cb === "function") {
+                        cb(err)
+                    }
                     return callback(err)
                 }
 
@@ -40,7 +42,9 @@ function collection(collectionName, database, options) {
 
                 var cursor = collection.find.apply(collection, args)
                 callback(null, cursor)
-                cb && cb(null, cursor)
+                if (typeof cb === "function") {
+                    cb(null, cursor)
+                }
 
                 function collectionMethod() {
                     return collection.find.apply(collection, arguments)
@@ -57,7 +61,10 @@ function collection(collectionName, database, options) {
 
         function closeDb(err, collection) {
             if (err) {
-                return cb && cb(err)
+                if (typeof cb === "function") {
+                    cb(err)
+                }
+                return
             }
 
             var db = collection.db
