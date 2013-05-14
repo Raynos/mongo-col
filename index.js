@@ -1,16 +1,19 @@
-var mongodb = require("mongodb"),
-    // Grab the database HOST, PORT, USER and PASSWORD from the environment
-    HOST = process.env.MONGODB_HOST || "localhost",
-    PORT = +process.env.MONGODB_PORT || 27017,
-    USER = process.env.MONGODB_USER,
-    PASSWORD = process.env.MONGODB_PASSWORD,
-    DB = process.env.MONGODB_DB || "DATABASE",
-    Db = mongodb.Db,
-    Server = mongodb.Server,
-    cachedResults,
-    extend = require("pd").extend,
-    callbackQueue,
-    collectionCallbackQueue = {}
+var mongodb = require("mongodb")
+var Db = mongodb.Db
+var Server = mongodb.Server
+var process = require("process")
+var extend = require("pd").extend
+
+// Grab the database HOST, PORT, USER and PASSWORD from the environment
+var HOST = process.env.MONGODB_HOST || "localhost"
+var PORT = +process.env.MONGODB_PORT || 27017
+var USER = process.env.MONGODB_USER
+var PASSWORD = process.env.MONGODB_PASSWORD
+var DB = process.env.MONGODB_DB || "DATABASE"
+
+var cachedResults
+var callbackQueue
+var collectionCallbackQueue = {}
 
 var Collection = {
     constructor: function (collection, callback) {
@@ -20,7 +23,9 @@ var Collection = {
 
         function returnCollection(err, collection) {
             this._collection = collection
-            callback && callback(this)
+            if (callback) {
+                callback(this)
+            }
         }
     }
 }
@@ -64,8 +69,8 @@ function createCollection(db, name, callback) {
     }
     collectionCallbackQueue[name] = [callback]
     db.createCollection(name, { safe: true }, function (err, col) {
-        var list = collectionCallbackQueue[name]
-        ;delete collectionCallbackQueue[name]
+        var list = collectionCallbackQueue[name];
+        delete collectionCallbackQueue[name]
         list.forEach(function (cb) {
             cb.call(col, err, col)
         })
@@ -116,7 +121,7 @@ function openDatabase(databaseName, callback) {
         cachedResults = arguments
         callbackQueue = null
         for (var i = 0, len = callbackList.length; i < len; i++) {
-            callbackList[i].apply(arguments[1], arguments)
+            callbackList[i].apply(data, arguments)
         }
     }
 }
