@@ -88,7 +88,7 @@ function openDatabase(databaseName, callback) {
         db = new Db(databaseName, new Server(HOST, PORT, {
             auto_reconnect: true,
             poolSize: 4
-        }), {})
+        }), { safe: true })
     }
     db.open(authenticateDatabase)
 
@@ -102,7 +102,7 @@ function openDatabase(databaseName, callback) {
         } else {
             invokeCallbacks(err, db)
         }
-        
+
         function saveDatabase(err, success) {
             if (success) {
                 return invokeCallbacks(err, db)
