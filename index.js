@@ -34,6 +34,10 @@ Object.keys(mongodb.Collection.prototype).forEach(addToCollection)
 
 collection.mongo = mongo
 collection.Collection = Collection
+collection.ObjectID = mongodb.ObjectID
+collection.close = function (cb) {
+    cachedResults[1].close(cb)
+}
 
 module.exports = collection
 

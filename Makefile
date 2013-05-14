@@ -1,9 +1,7 @@
 REPORTER = spec
 
-test: 
-	@NODE_ENV=test ./node_modules/.bin/mocha \
-		--ui bdd \
-		--reporter $(REPORTER)
+test:
+	node ./test/mongo-test.js
 
 bench:
 	node benchmarks/benchmarks.js

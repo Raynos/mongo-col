@@ -1,32 +1,44 @@
-var collection = require("../"),
-    assert = require("assert"),
-    Users = collection("Userz")
+var test = require("tape")
+var uuid = require("uuid")
 
-describe("mongo-collection", function () {
-    beforeEach(function (done) {
-        Users.drop(function () {
-            Users.insert({ name: "foo" }, function () {
-                done()
+var collection = require("../")
+var Users = collection("Userz")
+var id = uuid()
+
+test("insert a random user", function (assert) {
+    Users.drop(function (err) {
+        assert.ifError(err)
+
+        Users.insert([{ name: id }], function (err, records) {
+            assert.ifError(err)
+            assert.equal(records.length, 1)
+
+            Users.findOne({ name: id }, function (err, data) {
+                assert.ifError(err)
+                assert.equal(data.name, id)
+
+                Users.find({}, function (err, cursor) {
+                    cursor.toArray(function (err, data) {
+                        assert.equal(data[0].name, id)
+                        assert.equal(data.length, 1)
+
+                        assert.end()
+                    })
+                })
             })
         })
     })
+})
 
-    it("should allow inserting", function (done) {
-        assert(Users.collection.db, "database exists")
-        Users.findOne({ name: "foo" }, function (err, data) {
-            assert(data.name === "foo",
-                "data name incorrect")
-            done()
-        })    
-    })
+test("should have ObjectID", function (assert) {
+    assert.ok(collection.ObjectID)
+    assert.end()
+})
 
-    it("should support cursors", function (done) {
-        Users.find({}, function (err, cursor) { 
-            cursor.toArray(function (err, data) { 
-                assert(data[0].name === "foo",
-                    "data name incorrect")
-                done()
-            }) 
-        })
+test("close db", function (assert) {
+    collection.close(function (err) {
+        assert.ifError(err)
+
+        assert.end()
     })
 })
